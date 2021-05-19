@@ -224,7 +224,7 @@ The reson that this model selection procedure was not repeated is that these mod
 
 ## Diagnostics
 
-![A plot of the residuals against the linear predictor of the points. Note that 7311 points were omitted with a linear predictor close to 0, observed values of zero, and a residual just below zero. These points likely occurred in raster pixels where there was no reason to expect hate crimes, but where the model was an overestimate due to zero not being a possible mean for a poisson distribution.](plots and figures/residuals1.png)
+![A plot of the residuals against the linear predictor of the points. Note that 7311 points were omitted with a linear predictor with very large negative values, observed values of zero, and a residual just below zero. These points likely occurred in raster pixels where there was no reason to expect hate crimes, but where the model was an overestimate due to zero not being a possible mean for a poisson distribution.](plots and figures/residuals1.png)
 
 As is usually the case with residual analysis of GAMs and GLMs, residual analysis was a bit difficult. Fortunately the `mgcv` package includes a function for constructing quantile-quantile plots for GAM objects. These residuals show a fit that deviates from the reference line somewhat, but it is not too egregious. 
 
