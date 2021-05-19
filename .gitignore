@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+hate_crime.csv
+GAM_model_objects/
+references/
+masters-report.log
+masters-report_cache/
+masters-report_files/
+some_results_cache/
+some_results_files/

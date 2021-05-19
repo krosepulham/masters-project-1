@@ -1,0 +1,259 @@
+[
+{
+  "id":"wood2017",
+  "type":"book",
+  "title":"Generalized Additive Models: An Introduction with R",
+  "edition":"Second Edition",
+  "author":[
+    {
+      "family":"Wood",
+      "given":"Simon N."
+      
+    }
+  ],
+  "issued":"2017"
+},
+
+{
+  "id":"wood2006",
+  "type":"article-journal",
+  "title":"Low-Rank Scale-Invariant Tensor Product Smooths for Generalized Additive Mixed Models",
+  "author":{
+    "family":"Wood",
+    "given":"Simon N."
+  },
+  "issued":"2006",
+  "container":"Biometrics"
+},
+
+{
+  "id":"wood2002",
+  "type":"article-journal",
+  "title":"Thin plate regression splines",
+  "author":{
+    "family":"Wood",
+    "given":"Simon N."  
+  },
+  "issued":"2002",
+  "container-title":"Journal of the Royal Statistical Society Series B",
+  "container-title-short":"J. R. Statist. Soc. B"
+},
+
+
+{
+  "id":"fang2015",
+  "type":"article-journal",
+  "title":"Generalized Additive Models with Spatio-temporal Data",
+  "author":[
+    {
+      "family":"Fang",
+      "given":"Xiangming"
+    },
+    {
+      "family":"Chan",
+      "given":"Kung-Sik"
+    }
+  ],
+  "issued":"2015",
+  "container-title":"Environmental and Ecological Statistics"
+},
+
+{
+  "id":"bates1986",
+  "type":"report",
+  "genre":"Technical",
+  "number":"775",
+  "publisher-place":"University of Wisconsin",
+  "URL":"http://pages.stat.wisc.edu/~wahba/stat860public/pdf1/775r.pdf",
+  "title":"GCVPack: Routines for Generalized Cross Validation",
+  "issued":"1986",
+  "author":[
+    {
+      "family":"Bates",
+      "given":"Douglas M."
+    },
+    {
+      "family":"Lindstrom",
+      "given":"Mary J."
+    },
+    {
+      "family":"Wahba",
+      "given":"Grace"
+    },
+    {
+      "family":"Yandell",
+      "given":"Brian S."
+    }
+  ]
+},
+
+{
+  "id":"dunn2018",
+  "type":"book",
+  "title":"Generalized Linear Models With Examples in R",
+  "author":[
+    {
+      "family":"Dunn",
+      "given":"Peter K."
+    },
+    {
+      "family":"Smyth",
+      "given":"Gordon K."
+    }
+  ],
+  "issued":"2018"
+},
+
+{
+  "id":"green1994",
+  "type":"book",
+  "title":"Nonparametric Regression and Generalized Linear Models",
+  "subtitle":"A Roughness Penalty Approach",
+  "author":[
+    {
+      "family":"Green",
+      "given":"P.J."
+    },
+    {
+      "family":"Silverman",
+      "given":"B.W."
+    }
+  ],
+  "issued":"1994",
+  "edition":"First Edition"
+},
+
+{
+  "id":"geman1992",
+  "type":"article-journal",
+  "title":"Neural Networks and the Bias/Variance Dilemma",
+  "author":[
+    {
+      "family":"Geman",
+      "given":"Stuart"
+    },
+    {
+      "family":"Bienenstock",
+      "given":"Elie"
+    },
+    {
+      "family":"Doursat",
+      "given":"René"
+    }
+  ],
+  "issued":"1992",
+  "container-title":"Neural Computation"
+},
+
+{
+  "id":"neal2019",
+  "type":"thesis",
+  "author":{
+    "family":"Neal",
+    "given":"Brady"
+  },
+  "issued":{
+    "date-parts":[[2019,12,10]]
+  },
+  "title":"On the Bias-Variance Tradeoff: Textbooks Need an Update"
+},
+
+{
+  "id":"fbi",
+  "type":"webpage",
+  "title":"Federal Bureau of Investigation Crime Data Explorer",
+  "URL":"https://crime-data-explorer.fr.cloud.gov/pages/home"
+},
+
+{
+  "id":"park2019",
+  "type":"article-journal",
+  "author":[
+    {
+      "family":"Park",
+      "given":"Junhyung"
+    },
+    {
+      "family":"Schoenberg",
+      "given":"Frederic Paik"
+    },
+    {
+      "family":"Bertozzi",
+      "given":"Andrea L."
+    },
+    {
+      "family":"Brantingham",
+      "given":"P. Jeffrey"
+    }
+  ],
+  "title":"Investigating Clustering and Violencce Interruption in Gang-Related Violent Crime Data using Spatio-temporal Point Processes with Covariates",
+  "container":"Journal of the American Statistical Association",
+  "issued":{
+    "date-parts":[[2021,4,2021]]
+  }
+},
+
+{
+  "id":"reinsch1967",
+  "type":"article-journal",
+  "author":{
+    "family":"Reinsch",
+    "given":"Christian H."
+  },
+  "title":"Smoothing by spline functions",
+  "issued":"1967",
+  "container":"Numerische Mathematik"
+},
+
+{
+  "id":"mgcv",
+  "type":"book",
+  "author":{
+    "family":"Wood",
+    "given":"Simon N."
+  },
+  "title":"Mixed GAM Computation Vehicle with Automatic Smoothness Estimation",
+  "title-short":"mgcv",
+  "version":"1.8-35",
+  "issued":{
+    "date-parts":[[2021,4,18]]
+  }
+},
+
+{
+  "id":"winkle2019",
+  "type":"book",
+  "author":[
+    {
+      "family":"Winkle",
+      "given":"Christopher K."
+    },
+    {
+      "family":"Zammit-Mangion",
+      "given":"Andrew"
+    },
+    {
+      "family":"Cressie",
+      "given":"Noel"
+    }
+  ],
+  "title":"Spatio-Temporal Statistics with R",
+  "issued":"2019"
+},
+
+{
+  "id":"shilov1977",
+  "type":"book",
+  "title":"Linear Algebra",
+  "author":{
+    "family":"Shilov",
+    "given":"Georgi E."
+  },
+  "issued":"1977"
+}
+
+
+
+
+
+]
