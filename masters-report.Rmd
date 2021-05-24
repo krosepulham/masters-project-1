@@ -9,7 +9,8 @@ header-includes:
     - \usepackage{wrapfig}
 author: Katherine R. Pulham
 output: pdf_document
-bibliography: [bibliography.bib, bibliography.json]
+# bibliography: [bibliography.bib, bibliography.json] # Uncomment when person == "Kat"
+bibliography: [bibliography.bib]
 ---
 
 ```{r setup, include=FALSE}
@@ -22,9 +23,14 @@ library(gridExtra)
 
 # Introduction
 
+<!-- ZZQ: Sort of an odd place for a citation, but I feel it. -->
 [@tidyverse]
 
-Hate cimes are considered as a nonhomogeneous point process, and the intensity funciton is estimated using a Generalized additive model. To accomodate the spatio-temporal nature of the data set, a tensor product smoother is used, using a thin plate regression spline for the spatial domain, and a cubic regression spline for the temporal domain. Due to the overabundance of data, the scope of the investigation was limited to the pacific northwest by filtering the data to be between -125 and -116 degrees of longitude, and between 40 and 49 degrees of latitude. One question of interest concerns the changing political climate of the United States. With the rise in prominence of the "Alt-Right", a loose group of far-right political extremists, has there been an increase in hate crimes in the Pacific Northwest? For this reason the "post 9-11" era was considered, using only the hate crime data from 2002-2019. 
+<!-- ZZQ: I like the info presented in the first two paragraphs, but I think leading with how we consider the occurrence of hate crimes, from the statistical perspective, seems a bit "abrupt". Try leading with (1) what hate crimes are and (2) Why it's worth investigating hate crimes since the rise of the American "Alt-Right" movement. This way, we get the readers familiar with the problem we intend to address and why it's important. You can follow this up with things like: Where did the data come from and why we opt to focus our attention on the PNW in the post 9-11 years and finally what the central question we hope to address and how [E.g. "Using hate crime data from the FBI, we implement a spatio-temporal version of a generalized additive model to investigate how the rise of the Alt-Right has impacted the occurrences of hate crimes in the PNW for the post 9-11 era"]. Try to keep the first paragraph more "general" in feel so that you introduce the problem/idea/question and then we'll follow these general statements up with specifics in the second paragraph. -->
+<!-- ZZQ: In the second paragraph, consider focusing on presenting the reader with relevant information about the data. Where did it come from? Why, given its size, did you opt to focus on the PNW? How did you choose the "time window" to investigate. You can also talk about how the issues with the "locations" and talk a bit about how you resolved these issues with some slick geocoding. Essentially, keep this paragraph about the data and then lead this paragraph into statistical methods for treating the occurrence of hate crimes -->
+<!-- ZZQ: In the third paragraph, we can introduce the reader to the idea that hate crimes can be thought of as a nonhomogenous point process (We should mention "why" we consider this to be the case, i.e. hate crimes occur at points where underlying factors [both observable and unobservable] can impact the distribution of where and when they occur). We can mention then that previous work on crime has shown the usefulness of self-exciting point processes, but that in our case this class of models doesn't necessarily make sense (and why). You can then describe how you intend to use a GAM with a cubic spline for time and a tensor product smoother in space to model the spatio-temporal occurrences. Again, keep this info sort of "high level" since we'll hit the committee with the details in the methods section -->
+<!-- ZZQ: Overall, our goal with the intro is to ease the reader into the issue, give some high level details to keep them interested, and layout some idea of what they should expect. Keeping the different pieces in separate paragraphs makes it a bit easier for the reader to keep track of the ideas (rather than going back and forth between the first two paragraphs). And if you're finding that keeping the relevent info about, say, the data to one paragraph is too tough, break it up into two (But again, keep the ideas "connected". With a bit of reworking, I think this intro will be sick (The ideas are all there, I think we just need to order them slightly differently .... speaking of which, if at some point you don't like my suggestions, just ignore them (Though I'll try to keep the comments "good", I promise!) -->
+Hate crimes are considered as a nonhomogeneous point process, and the intensity function is estimated using a Generalized additive model. To accomodate the spatio-temporal nature of the data set, a tensor product smoother is used, using a thin plate regression spline for the spatial domain, and a cubic regression spline for the temporal domain. Due to the overabundance of data, the scope of the investigation was limited to the pacific northwest by filtering the data to be between -125 and -116 degrees of longitude, and between 40 and 49 degrees of latitude. One question of interest concerns the changing political climate of the United States. With the rise in prominence of the "Alt-Right", a loose group of far-right political extremists, has there been an increase in hate crimes in the Pacific Northwest? For this reason the "post 9-11" era was considered, using only the hate crime data from 2002-2019. 
 
 ![Summary of the subset of the data being used. For all plots, only data from within the area of interest after 2002 were used. For the bottom right plot, the "Hate Crime Rate" was calculated by dividing the total number of hate crimes within Oregon and Washington for a given year by the census estimates for the population of that state for that year.](plots and figures/Old Figures/Figure 1.png)
 
@@ -38,7 +44,10 @@ Describing this feature engineering process reveals an unavoidable weakness of t
 
 ## Inhomogenous point process
 
-Speaking extremely roughly, poisson processes are a family of mathematical models that are used to model *things* that happen in space and time, where we represent these things by points, and assume that there's some sort a random element to the way these points are distributed [@kingman1993]. We assume that for a measurable subset of some manifold, the number of points occurring in that subset is modeled by a poisson random variable, where the mean of that poisson random variable is given by the measure of the subset. The simplest example of this sort of model is the homogeneous poisson process, where the mean of the distribution of the number of points occurring in a subset is given by a constant times the Lebesgue measure of that set (the length, area, volume etc. depending on the dimension of the space in question). For instance, we could model the number of calls coming into a call center by letting the space representing time be the real line, and say that the mean number of calls for any interval of time is given by the length of that interval times some rate $\mu$. 
+Speaking extremely roughly, poisson processes are a family of mathematical models that are used to model 
+*things*
+<!-- ZZQ: Phenomena? -->
+that happen in space and time, where we represent these things by points, and assume that there's some sort a random element to the way these points are distributed [@kingman1993]. We assume that for a measurable subset of some manifold, the number of points occurring in that subset is modeled by a poisson random variable, where the mean of that poisson random variable is given by the measure of the subset. The simplest example of this sort of model is the homogeneous poisson process, where the mean of the distribution of the number of points occurring in a subset is given by a constant times the Lebesgue measure of that set (the length, area, volume etc. depending on the dimension of the space in question). For instance, we could model the number of calls coming into a call center by letting the space representing time be the real line, and say that the mean number of calls for any interval of time is given by the length of that interval times some rate $\mu$. 
 
 An inhomogenous poisson process is an abstraction from this, where we consider the expected value of the number of points of given interval to be given by the integral of some function over that space. We call this function the intensity function. 
 
@@ -46,7 +55,7 @@ For the hate crime data, clearly the crimes themselves can be considered as poin
 
 ## Generalized Additive Models
 
-Generalized additive models are a further abstraction from the linear model, beyond the generalized linear model. We start with the linear model: $Y_i \overset{i.i.d.}{\sim} \mathcal{N}(\mu_i,\sigma^2)$
+Generalized additive models are a further abstraction from the linear model, beyond the generalized linear model. We start with the linear model: $Y_i \overset{\textrm{iid}}{\sim} \mathcal{N}(\mu_i,\sigma^2)$
 where
 \[
 \mu_i = \beta_0 + \beta_1X_{1,i} + ... + \beta_pX_{p,i}
@@ -61,17 +70,21 @@ For a generalized additive model, the model equation is as follows:
 \[
 g(\mu_i) = f_1(X_{1,i}) + f_2(X_{2,i}) + ... 
 \]
-here, $g(\cdot)$ is still the link function, and $\mu_i$ is still the mean response for the $i^{th}$ observation. In this case, the functions $f_j$ are smooth functions of the covariates; all that's required is that they're smooth. The value of specifying the model this loosely is that it allows for the functions of the covariates to be specified in flexible ways. One of the functions can even take more than one of the covariates as an input:
+here, $g(\cdot)$ is still the link function, and $\mu_i$ is still the mean response for the $i^{th}$ observation. In this case, the functions $f_j$ are smooth functions of the covariates; all that's required is that they are smooth. The value of specifying the model this loosely is that it allows for the functions of the covariates to be specified in flexible ways. One of the functions can even take more than one of the covariates as an input:
 \[
 g(\mu_i) = f_1(X_{1,i}) + f_2(X_{2,i},X_{3,i}) + ...
 \]
 
 Depending on how the individual $f_j$s are specified, the procedure of fitting a generalized additive model varies a bit. Some approaches involve breaking up the domain of an explanatory variable into different regions separated at values called *knots* [@green1994]. Typically, these functions are estimated by creating a linear space of functions of the same variable, then finding a suitable combination of the basis for this linear space to estimate $f_j(\cdot)$.
 
-One issue that GAMs run into is the *bias/variance trade-off*. The idea behind the bias/variance trade-off was stated as:
+One issue that GAMs run into is the *bias/variance trade-off*. The idea behind the bias/variance trade-off is stated as:
+
 > estimation error can be decomposed into two components, known as bias and variance; whereas incorrect models lead to high bias, truly model-free inference suffers from high variance
 
-The authors of this statement [@geman1992] characterize this trade-off as being a choice between two models. One model, by not presuming too much about the structure of the underlying relationship, achieves low degree of bias in estimation at the cost of being more variable. The other model avoids being too variable, which can cause overfitting, at the cost of capturing too little information about the underlying relationship. 
+The authors of this statement [@geman1992] characterize this trade-off as being a choice between two models. One model, by not presuming too much about the structure of the underlying relationship, achieves low degrees of bias in estimation at the cost of being more variable. The other model avoids being too variable, which can cause overfitting, at the cost of capturing too little information about the underlying relationship. 
+
+<!-- ZZQ: Include a brief explanation about how the figure below demonstrates the bias variance trade off. Start with something like, "In Figure 2, we can see a visual representation of the bias/variance trade off. In the left most pane, we see ..." -->
+<!-- ZZQ: Basically, any plot that you include should have some sort of comment about in the writing. -->
 
 ![Loess smoothers used to demonstrate the bias/variance trade-off. On the left the model is overfit, on the right the model is underfit, and in the center the model fit is good.](plots and figures/biasvar.png)
 
@@ -79,7 +92,8 @@ Traditionally, the bias/variance trade-off was regarded as an immutable fact of 
 
 Although this bias/variance trade-off can be a nuisance when training machine learning models, it provides a natural motivation for a type of GAM smoother called a penalized regression spline. 
 
-- Where are they used? For what applications?
+<!-- ZZQ: Going to comment this line out since I think it's just a "note" to yourself -->
+<!-- - Where are they used? For what applications? -->
 
 ## Cubic Regression Splines
 
@@ -91,13 +105,16 @@ Given a set of observations, **X** and **Y**, we wish to recover the smooth func
 \[
 minimize \;\; \sum_{i=1}^{n} (Y_i - \hat{g}(X_i))^2 
 \]
-However, doing to produces an *interpolation spline* [@green1994]. This smooth curve will connect all of the points in our dataset together, but it will be a curve with extreme amount of variance.
+However, doing so produces an *interpolation spline* [@green1994]. This smooth curve will connect all of the points in our dataset together, but it will be a curve with extreme amount of variance.
+<!-- ZZQ: "... as shown in Figure 3." -->
 
 <div style="float:right">
 ![An interpolation spline used for data coming from a smooth function with normal error terms.](plots and figures/interpolation spline.png)
 </div>
 
-In terms of the bias/variance trade-off, interpolation splines lean all the way towards "low bias high variance", which produces curves like the one above, which are not particularly helpful for estimating $g(\cdot)$. They "wiggle" back and forth too much, and when used to try and recover a "signal" by smoothing away noise, they can produce artifacts where the spline goes way outside the range of where points are being observed. To mitigate this, we can penalize the amount of "wiggling" that the curve does. We note that the more the curve wiggles back and forth, the more regions the curve spends with high curvature. Intuitively, we can penalizing this by penalizing the square of second derivative, since we wish to penalize strong positive curvature, and strong negative curvature. The minimization problem then becomes: 
+In terms of the bias/variance trade-off, interpolation splines lean all the way towards "low bias high variance", which produces curves like the one above, 
+<!-- ZZQ: "which produces curves like the one in Figure 3" -->
+which are not particularly helpful for estimating $g(\cdot)$. They "wiggle" back and forth too much, and when used to try and recover a "signal" by smoothing away noise, they can produce artifacts where the spline goes way outside the range of where points are being observed. To mitigate this, we can penalize the amount of "wiggling" that the curve does. We note that the more the curve wiggles back and forth, the more regions the curve spends with high curvature. Intuitively, we can penalizing this by penalizing the square of second derivative, since we wish to penalize strong positive curvature, and strong negative curvature. The minimization problem then becomes: 
 \[
 minimize \;\; \sum_{i=1}^{n} (Y_i - \hat{g}(X_i))^2 + \lambda \int_{\mathbb{R}} (\hat{g}''(x))^2dx
 \]
@@ -105,6 +122,7 @@ As outlined by @green1994, an algorithm to solve this minimization problem and o
 
 ![Using the same simulated data as for the interpolation spline, three cubic smoothing splines were fit with different values of the roughness penalty tuning parameter. ](plots and figures/cubic smoothing spline.png)
 
+<!-- ZZQ: Move the figure after the paragraph below. And don't forget to mention the figure (i.e. "As seen in Figure 4") somewhere in the paragraph. -->
 A quick simulation study in R can show us the effects the tuning parameter has on the estimated function $\hat{g}(\cdot)$. As the tuning parameter goes to infinity, the roughness penalty becomes so large that fit curve becomes a line. As the roughness penalty becomes smaller and smaller, more "wiggling" is permitted, and we get a more flexible spline. As the tuning parameter goes to zero, the spline is allowed to wiggle with no limit, and a cubic _interpolation_ spline is achieved 
 
 Another approach to cubic regression splines is a *knot based* approach, where the domain of the x variable is broken up into discrete regions, separated by points called *knots*. In fact, splines fit using the Reinsch algorithm will also have knots, but the knot locations are not specified ahead of time. It is possible through the use of basis functions to fit a cubic regression spline without specifying the tuning parameter $\lambda$, but instead specifying the dimention of the space spanned by the basis functions, which is the same as specifying the number of knots to be used [@wood2017]. However, the advantage of using the penalized cubic regression spline is that it allows us to control explicitly the degree of the bias/variance trade-off we want to achieve with our model. 
@@ -123,7 +141,7 @@ With this in mind, we can define the thin plate spline by letting $\mathcal{F}$ 
 \begin{equation}\label{tps1}
 ||\textbf{y} - f||^2 + \lambda J(f)
 \end{equation}
-$||\cdot||$ is the euclidean norm; note that it makes the first part of this function penalize deviation between predicted response and observed response. If this deviation were the only thing in this equation being minimized, it would produce a model which overfits the date. To combat this, the term $\lambda J(f)$ is added to penalize the selection of the function f. Some authors describe this function as a penalty of "wiggliness" [@wood2017]; it is defined as 
+$||\cdot||$ is the Euclidean norm; note that it makes the first part of this function penalize deviation between predicted response and observed response. If this deviation were the only thing in this equation being minimized, it would produce a model which overfits the date. To combat this, the term $\lambda J(f)$ is added to penalize the selection of the function f. Some authors describe this function as a penalty of "wiggliness" [@wood2017]; it is defined as 
 \begin{equation}\label{wiggly}
 J(f) = 
   \int_{\mathbb{R}^d} 
@@ -131,22 +149,23 @@ J(f) =
       \frac{m!}{\nu_1!...\nu_d!}\left(\frac{\partial^m f}{\partial x_1^{\nu_1}...\partial x_d^{\nu_d}}\right)^2dx_1...dx_d
 \end{equation}
 Here, m is chosen so that $2m>d$. 
-This function will penalize the minimization problem for functions which are too "wiggly", which counteracts the tendency of the euclidean norm to select models that over-fit the data. As an example, in the case where d=1 the penalty (\ref{wiggly}) becomes $J(f) = \int_\mathbb{R} [f''(x)]^2dx$ and the resulting solution to (\ref{tps1}) is a the *natural cubic spline* that we saw in the previous section is achieved [@fang2015].
+This function will penalize the minimization problem for functions which are too "wiggly", which counteracts the tendency of the Euclidean norm to select models that over-fit the data. As an example, in the case where d=1 the penalty (\ref{wiggly}) becomes $J(f) = \int_\mathbb{R} [f''(x)]^2dx$ and the resulting solution to (\ref{tps1}) is a the *natural cubic spline* that we saw in the previous section is achieved [@fang2015].
 
 It can be shown [@wood2002] that the solution to this minimization problem takes the form 
 \begin{equation}\label{tps2}
 g(\textbf{x})=\sum_{i=1}^{n}{\delta_i\eta_{md}(||\textbf{x}-\textbf{x}_i||)} + \sum_{j=1}^{M}\alpha_j \phi_j(\textbf{x})
 \end{equation}
-See [@wood2002] for more details, but there are a few things that are important to note. First, see that the $\alpha_j$s and $\delta_i$s are coefficients that we wish to estimate. $\nu_{md}$ is a function of a specific form, determined solely by $d$ and $m$, being defined on the positive real numbers. This function takes as its input the euclidean distance between an input point in $\mathbb{R}^d$ and one of the observations $\textbf{x}_i$, giving each point a weighted, isotropic effect on the estimated function. The $\phi_j$s are linearly independent polynomials which span the space of polynomials with degree less than m on $\mathbb{R}^d$, and $M$ is the dimension of the polynomial space, which is given by $M=$${m+d-1}\choose{d}$ [@bates1986]. The estimation problem is now a search for the set of the weights on these two different types of functions, $\{\delta_i\}$ and $\{\alpha_j\}$. If we define the matrix **E** by $E_{ij} = \eta_{md}(||\textbf{x}_i-\textbf{x}_j||)$ and the matrix **T** by $T_{ij} = \phi_j(\textbf{x}_i)$, the minimization problem takes the form:
+See [@wood2002] for more details, but there are a few things that are important to note. First, see that the $\alpha_j$s and $\delta_i$s are coefficients that we wish to estimate. $\nu_{md}$ is a function of a specific form, determined solely by $d$ and $m$, being defined on the positive real numbers. This function takes as its input the Euclidean distance between an input point in $\mathbb{R}^d$ and one of the observations $\textbf{x}_i$, giving each point a weighted, isotropic effect on the estimated function. The $\phi_j$s are linearly independent polynomials which span the space of polynomials with degree less than m on $\mathbb{R}^d$, and $M$ is the dimension of the polynomial space, which is given by $M=$${m+d-1}\choose{d}$ [@bates1986]. The estimation problem is now a search for the set of the weights on these two different types of functions, $\{\delta_i\}$ and $\{\alpha_j\}$. If we define the matrix **E** by $E_{ij} = \eta_{md}(||\textbf{x}_i-\textbf{x}_j||)$ and the matrix **T** by $T_{ij} = \phi_j(\textbf{x}_i)$, the minimization problem takes the form:
 \begin{equation}\label{tps3}
 \underset{\text{\boldmath$\alpha$,\boldmath$\delta$}}{\text{argmin}}||\textbf{y} - \textbf{E}\text{\boldmath$\delta$} - \textbf{T}\text{\boldmath$\alpha$}||^2
 +\lambda \text{\boldmath$\delta$}'\textbf{E}\text{\boldmath$\delta$}
 \quad\text{subject to the constraint }\textbf{T}'\text{\boldmath$\delta$} = 0
 \end{equation}
 
-In addition to having an intuitive motivation, thin plate splines have a couple of benefits [@wood2017]. For example, they are isotropic, meaning that the resulting function will be the same of the orientation of the bases of $\mathbb{R}^d$. However, they come at an incredible cost in terms of computation speed. This prompts the question "can we create a function that decently approximates a thin plate spline, but with low rank, while still retaining the useful properties of a thin plate spline?" The answer is yes: enter the thin plate *regression* spline. 
+In addition to having an intuitive motivation, thin plate splines have a couple of benefits [@wood2017]. For example, they are isotropic, meaning that the resulting function will be the same of the orientation of the bases of $\mathbb{R}^d$. However, they come at an incredible cost in terms of computation speed. This prompts the question, "Can we create a function that decently approximates a thin plate spline, but with low rank, while still retaining the useful properties of a thin plate spline?" The answer is yes: enter the thin plate *regression* spline. 
+<!-- ZZQ: I love this last sentence. -->
 
-The idea behind a thin plate regression spline is to modify \ref{tps3} to create a low-rank, more computationally efficient approximation. This is accomplished by taking the eigen-decomposition of **E** with $\textbf{E} = \textbf{UDU}'$, such that D is a diagonal matrix of eigenvalues of **E** such that $|D_i,i|\geq |D_{i-1,i-1}|$ for all $i\in\{2,3,...n\}$, meaning the diagonal is in ascending order of absolute value from top-left to bottom-right. The trick is to replace **E** by truncating **U** and **D**; we denote the matrix consisting of the first k eigenvectors by $\textbf{U}_k$ and we denote the diagonal matrix with the corresponding eigenvalues as $\textbf{D}_k$. Note that to do this we just take the first k columns from **U** and the top left $k\times k$ submatrix of **D**. Since $\textbf{U}_k$ is a $k\times n$ matrix, we can restrict \boldmath$\delta$ to the column space of $\textbf{U}_k$ by writing it as $\textbf{U}_k\text{\boldmath$\delta$}_k$. With this, the minimization problem becomes 
+The idea behind a thin plate regression spline is to modify Equation \ref{tps3} to create a low-rank, more computationally efficient approximation. This is accomplished by taking the eigen-decomposition of **E** with $\textbf{E} = \textbf{UDU}'$, such that D is a diagonal matrix of eigenvalues of **E** such that $|D_i,i|\geq |D_{i-1,i-1}|$ for all $i\in\{2,3,...n\}$, meaning the diagonal is in ascending order of absolute value from top-left to bottom-right. The trick is to replace **E** by truncating **U** and **D**; we denote the matrix consisting of the first k eigenvectors by $\textbf{U}_k$ and we denote the diagonal matrix with the corresponding eigenvalues as $\textbf{D}_k$. Note that to do this we just take the first k columns from **U** and the top left $k\times k$ submatrix of **D**. Since $\textbf{U}_k$ is a $k\times n$ matrix, we can restrict \boldmath$\delta$ to the column space of $\textbf{U}_k$ by writing it as $\textbf{U}_k\text{\boldmath$\delta$}_k$. With this, the minimization problem becomes 
 \begin{equation}\label{tprs1}
 \underset{\text{\boldmath$\alpha$,\boldmath$\delta$}}{\text{argmin}}
   ||\textbf{y} - \textbf{U}_k\textbf{D}_k\text{\boldmath$\delta$}_k - \textbf{T}\text{\boldmath$\alpha$}||^2
@@ -154,16 +173,16 @@ The idea behind a thin plate regression spline is to modify \ref{tps3} to create
 \quad\text{subject to the constraint }\textbf{T}'\textbf{U}_k\text{\boldmath$\delta$}_k = 0
 \end{equation}
 
-Wood goes into more deail of how the R package mgcv minimize this equation under the constraint [@wood2017], but the important part to recognize is that once the $\text{\boldmath$\delta$}_k$ is estimated, the full $\text{\boldmath$\delta$}$ is retrieved by a single matrix multiplication operation, the $\text{$\delta$}$ can be used with **E** to estimate \unboldmath$g(\cdot)$. 
+Wood goes into more deail of how the R package mgcv minimizes this equation under the constraint [@wood2017], but the important part to recognize is that once the $\text{\boldmath$\delta$}_k$ is estimated, the full $\text{\boldmath$\delta$}$ is retrieved by a single matrix multiplication operation and the $\text{$\delta$}$ can be used with **E** to estimate \unboldmath$g(\cdot)$. 
 
 ## Tensor Product Smoothers
 
-After looking at the properties of cubic regression splines and thin plate regression splines, it makes intuitive sense that a thin plate regression spline would be appropriate for the spatial component of the hate crime data set, and a cubic regression spline would be appropriate for the temporal component. The question becomes how we are to combine these two components together in a single model. A convenient solution for this problem is the *tensor product smoother.* In fact, tensor product smooths are such a natural solution for this problem that @wood2017 cites "a smooth function of a single spatial coordinate and time" as a motivating example for tensor product smooths. Lab 4.4 of @winkle2019 uses a tensor product smooth of a two-dimensional spatial domain and a temporal domain explanatory variables to model count data for Carolina Wrens; this example is so similar to the hate crime data set that it is the motivation for this project.
+After looking at the properties of cubic regression splines and thin plate regression splines, it makes intuitive sense that a thin plate regression spline would be appropriate for the spatial component of the hate crime data set, and a cubic regression spline would be appropriate for the temporal component. The question becomes how we are to combine these two components together in a single model. A convenient solution for this problem is the *tensor product smoother.* In fact, tensor product smooths are such a natural solution for this problem that @wood2017 cites, "A smooth function of a single spatial coordinate and time," as a motivating example for tensor product smooths. Lab 4.4 of @winkle2019 uses a tensor product smooth of a two-dimensional spatial domain and a temporal domain explanatory variables to model count data for Carolina Wrens; this example is so similar to the hate crime data set that it is the motivation for this project.
 
 As some have commentators have noted, the theory, axioms, and definitions that go into defining tensors can be quite terse [@tensorphobia]. However, there is one property that makes tensor product smoothers a good choice for combining these basis spaces together: *multiliniarity*. A function of *k* vector arguments is said to be multilinear if it is linear in each of its arguments, *when all other arguments remain fixed* [@shilov1977]. This desirable property, which the addition of tensors has, is what helps mitigate the scaling issue of combining two bases. As @wood2017 puts it, 
-\begin{quote} 
-consider a smooth function of a single spatial coordinate and time: the implied relative importance of smoothness in time versus smoothness in space is very different between a situation in which the units are metres and hours, compared to that in which the units are lightyears and nanoseconds.
-\end{quote}
+
+> Consider a smooth function of a single spatial coordinate and time: the implied relative importance of smoothness in time versus smoothness in space is very different between a situation in which the units are metres and hours, compared to that in which the units are lightyears and nanoseconds.
+
 The multilinarity of tensors allows us to combine these two bases in an elegant way which solves this issue.
 
 Currently, we have a basis for a vector space of functions, where the functions are of time, and some linear combination of these functions gives us a smooth estimate of $g(t)$. We have the same thing for the spatial domain, where the thin plate regression spline fitting algorithm outlined in @wood2002, used in the mgcv package [@mgcv], is a search for an optimal linear combination from "an optimal approximating basis". To bring these two smooths together, we need to somehow unite the vector spaces formed by the basis functions. This task of uniting two vector spaces is where the tensor product is employed in a tensor product smooth. 
@@ -207,26 +226,35 @@ As @wood2017 points out, the generalized cross-validation estimate is often cons
 
 # Results
 
-## model selection
+## Model Selection
 
-Since $\lambda$ is chosen using the Generalized Cross Validation as an optimality criterion, all that remains is to specify the basis dimensions for the spatial and temporal marginal smooths. The question remains as to how these basis dimensions are to be specified. Initially, naively, the intuitive approach was to use AIC or GCV as optimality criteria, and find a basis dimension that minimized one or both of them. However, fitting several models with varying basis dimensions showed no signs of achieving a minimum for either optimality criterion. Model fitting times were becoming untenable, and it became clear that there was no reason to assume that either optimality criterion would achieve a minimum before the saturated model was fit. 
+Since $\lambda$ is chosen using the Generalized Cross Validation as an optimality criterion, all that remains is to specify the basis dimensions for the spatial and temporal marginal smooths. The question remains as to how these basis dimensions are to be specified. Initially, naively, the intuitive approach was to use AIC or GCV
+<!-- ZZQ: Do we define "GCV" somewhere in the report? -->
+as optimality criteria, and find a basis dimension that minimized one or both of them. However, fitting several models with varying basis dimensions showed no signs of achieving a minimum for either optimality criterion. Model fitting times were becoming untenable,
+<!-- ZZQ: Give a rough estimate as to how long fitting times were taking. Was it on the order of seconds, minutes, hours? -->
+and it became clear that there was no reason to assume that either optimality criterion would achieve a minimum before the saturated model was fit. 
 
 Fortunately, @wood2017 outlines a randomized diagnostic test to check if the basis dimensions are large enough, and he included an implementation of this test in `mgcv`. Since it was randomized, three replicates were taken for each combination of the values of spatial and temporal basis dimension were made to get an idea of the spread. This randomized test statistic is called the k-index; @mgcv suggests that models which produce a k-index above 1 will be sufficiently fit, and that models with a k-index below 1 might be underfit. 
+<!-- ZZQ: Include a brief bit of text describing the plot below. That is, "Figure 4 shows ...." -->
 
 ![GCV, AIC, and 3 k-index values were found for varying spatial and temporal basis dimensionality. GCV, AIC, and k-index are plotted here for both 5 and 7 for the temporal basis dimension, but the values are so similar that this may be difficult to see.](plots and figures/model_selection1.png)
 From this process, we learn that AIC and GCV may not be particularly helpful in telling us when the basis dimensions are large enough to capture the pattern of the data. Furthermore, even with 300 spatial knots and 7 temporal knots the k-index of the model was below 1. At this point it seems that the amount that the basis dimension of the model is going to need to be raised to an unreasonable degree to achieve the desired k-index.
 
-These models (those in the above figure) were fit using a negative-binomial family for the error term of the model. It was assumed that this would be a better fit than a poisson model, which can suffer from underdispersion. At this point, a poisson model was fit using a spatial basis dimension of 300, and a temporal basis dimension of 7. This model, surprisingly, had a k-index that was consistently above 1, and with a higher percentage of deviance explained by the model than with the negative-binomial model. 
+These models (those in the above figure) 
+<!-- ZZQ: (Those shown in Figure 4) -->
+were fit using a negative-binomial family for the error term of the model. It was assumed that this would be a better fit than a Poisson model, which can suffer from underdispersion. At this point, a Poisson model was fit using a spatial basis dimension of 300, and a temporal basis dimension of 7. This model, surprisingly, had a k-index that was consistently above 1, and with a higher percentage of deviance explained by the model than with the negative-binomial model. 
+<!-- ZZQ: Figure 5 shows... -->
 
 ![to be sure the satisfactory k-index was not a product of random chance, 100 k-index values were calculated, their box-and-whisker plot shown here. ](plots and figures/model_selection2.png)
 
-The reson that this model selection procedure was not repeated is that these models take an extraordinary length of time to fit. The final model, using a poisson family for the errors, with a spatial basis dimension of 300, and a temporal dimension of 7 took 8 hours to fit on a quad-core 1.8GHz processor with 16GB of memory. 
+The reason that this model selection procedure was not repeated is that these models take an extraordinary length of time to fit. The final model, using a poisson family for the errors, with a spatial basis dimension of 300, and a temporal dimension of 7 took 8 hours to fit on a quad-core 1.8GHz processor with 16GB of memory. 
 
 ## Diagnostics
 
 ![A plot of the residuals against the linear predictor of the points. Note that 7311 points were omitted with a linear predictor with very large negative values, observed values of zero, and a residual just below zero. These points likely occurred in raster pixels where there was no reason to expect hate crimes, but where the model was an overestimate due to zero not being a possible mean for a poisson distribution.](plots and figures/residuals1.png)
 
 As is usually the case with residual analysis of GAMs and GLMs, residual analysis was a bit difficult. Fortunately the `mgcv` package includes a function for constructing quantile-quantile plots for GAM objects. These residuals show a fit that deviates from the reference line somewhat, but it is not too egregious. 
+ZZQ: "... as seen in Figure
 
 ![QQ plot of the residuals using mgcv::qq.gam()](plots and figures/residuals2.png)
 
